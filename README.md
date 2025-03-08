@@ -2,7 +2,7 @@
 
 The **Classic Equalizer** is a web component that provides a visual representation of audio frequencies in a classic equalizer style. It uses the Web Audio API to analyze audio data and display it in a visually appealing way using either a canvas or HTML elements.
 
-![Preview image](preview.jpg "preview image")
+![Preview image](https://github.com/ChTosar/classicEqualizer/blob/main/preview.jpg?raw=true "preview image")
 
 ## Features
 

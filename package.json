@@ -1,12 +1,20 @@
 {
   "name": "classic-equalizer",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": ["equalizer", "visualizer"],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ChTosar/classicEqualizer.git"
+  },
   "author": "chtosar",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ChTosar/classicEqualizer/issues"
+  },
+  "homepage": "https://github.com/ChTosar/classicEqualizer#readme",
   "description": "A classic graphic equalizer, customizable and in webcomponents"
 }
