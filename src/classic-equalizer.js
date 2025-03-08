@@ -16,11 +16,7 @@ class ClassicEqualizer extends HTMLElement {
         this.barsMarginY = 2.5;
         this.barsMarginX = 2.5;
         this.barBorderRadius = 2;
-        const clientWidth = 1200;
-        const clientHeight = 800;
-
-        this.barWidth = (clientWidth - (this.barsMarginX*2)*this.cols) / this.cols;
-        this.barHeight = (clientHeight - (this.barsMarginY*2)*this.rows) / this.rows;
+        this.style.width = '100%';
 
         this.type = this.getAttribute('type') || 'canvas';
 
@@ -32,7 +28,7 @@ class ClassicEqualizer extends HTMLElement {
         const src = this.getAttribute('src');
 
         this.shadowRoot.innerHTML = `
-            <canvas id="equalizer" width="${clientWidth}" height="${clientHeight}" style="display: none;"></canvas>
+            <canvas id="equalizer" style="display: none;"></canvas>
             <div id="domEqualizer" style="display: none;"></div>
             <div class="frequencys"></div>
             <audio id="audio" src="${src}" controls></audio>
@@ -44,8 +40,7 @@ class ClassicEqualizer extends HTMLElement {
                     margin-left: ${this.barsMarginX}px;
                 }
                 #domEqualizer {
-                    width: ${clientWidth}px;
-                    height: ${clientHeight}px;
+                    width: 100%;
                     background-color: #000;
                     transform: scale(-1, 1);
                 }
@@ -64,7 +59,6 @@ class ClassicEqualizer extends HTMLElement {
                 }
                 :host {
                     display: block;
-                    padding: 20px;  
                 }
             </style>`;
 
@@ -175,7 +169,11 @@ class ClassicEqualizer extends HTMLElement {
     }
 
     connectedCallback() {
-       this.animate();
+        this.calculateBars();
+        this.animate();
+        window.addEventListener('resize', () => {
+            this.calculateBars();
+        });
     }
 
     animate() {
@@ -229,9 +227,18 @@ class ClassicEqualizer extends HTMLElement {
     
         return resultado;
     }
+
+    calculateBars() {
+        this.barWidth = (this.offsetWidth - (this.barsMarginX*2)*this.cols) / this.cols;
+        this.barHeight = ((this.offsetWidth * (9/16)) - (this.barsMarginY*2)*this.rows) / this.rows;
+    }
     
     draw() {
         this.canvas.style.display = 'block';
+
+        this.canvas.width = this.offsetWidth;
+        this.canvas.height = this.offsetWidth * (9/16);
+
         this.domEqualizer.style.display = 'none';
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     
@@ -268,6 +275,7 @@ class ClassicEqualizer extends HTMLElement {
 
     htmlDraw() {
        this.domEqualizer.style.display = 'block';
+       this.domEqualizer.style.height = this.offsetHeight * (9/16);
        this.canvas.style.display = 'none';
 
        let children = this.cols * this.rows;
