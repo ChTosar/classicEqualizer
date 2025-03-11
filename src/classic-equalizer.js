@@ -25,13 +25,13 @@ class ClassicEqualizer extends HTMLElement {
         this.barColor = colors.barColor;
         this.barColor2 = colors.barColor2;
         this.barColor3 = colors.barColor3;
-        const src = this.getAttribute('src');
+        this.src = this.getAttribute('src');
 
         this.shadowRoot.innerHTML = `
             <canvas id="equalizer" style="display: none;"></canvas>
             <div id="domEqualizer" style="display: none;"></div>
             <div class="frequencys"></div>
-            <audio id="audio" src="${src}" controls></audio>
+            ${this.src ? `<audio id="audio" src="${this.src}" controls></audio>` : ''}
             <style>
                 canvas {
                     border: 0px solid #000;
@@ -67,13 +67,17 @@ class ClassicEqualizer extends HTMLElement {
             this.shadowRoot.getElementById('domEqualizer').appendChild(div);
         }
         
-        this.audio = this.shadowRoot.getElementById('audio');
         this.canvas = this.shadowRoot.getElementById('equalizer');
         this.domEqualizer = this.shadowRoot.getElementById('domEqualizer');
         this.ctx = this.canvas.getContext('2d');
         this.oldPos = [];
         this.dataArray = [];
         this.stop = false;
+    }
+
+    getAudio() {
+
+        this.audio = this.shadowRoot.getElementById('audio') || document.querySelector(this.getAttribute('audio'));
 
         this.audio.addEventListener('play', () => {
 
@@ -141,7 +145,7 @@ class ClassicEqualizer extends HTMLElement {
     }
     
     static get observedAttributes() {
-        return ['type', 'colors', 'src'];
+        return ['type', 'colors', 'src', 'audio'];
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
@@ -150,7 +154,11 @@ class ClassicEqualizer extends HTMLElement {
                 this.type = newValue;
                 break;
             case 'src':
-                this.audio.src = newValue;
+                this.src = newValue;
+                this.getAudio();
+                break;
+            case 'audio':
+                this.getAudio();
                 break;
             case 'colors':
                 try {
