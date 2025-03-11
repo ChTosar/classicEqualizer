@@ -4,8 +4,9 @@ class ClassicEqualizer extends HTMLElement {
         this.attachShadow({ mode: 'open' });
 
         this.fps = 30;
-        this.rows = 40;
-        this.cols = 8;
+        this.rows = this.getAttribute('rows') || 40;
+        this.cols = this.getAttribute('cols') || 8;
+        this.height = this.getAttribute('height');
         this.debug = false;
 
         // On Hz
@@ -145,11 +146,22 @@ class ClassicEqualizer extends HTMLElement {
     }
     
     static get observedAttributes() {
-        return ['type', 'colors', 'src', 'audio'];
+        return ['type', 'colors', 'src', 'audio', 'cols', 'rows', 'height'];
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
         switch (name) {
+            case 'cols':
+                this.cols = this.getAttribute('cols');
+                this.calculateBars();
+                break;
+            case 'rows': 
+                this.rows = this.getAttribute('rows');
+                this.calculateBars();
+                break;
+            case 'height':
+                this.height = this.getAttribute('height');
+                break;
             case 'type':
                 this.type = newValue;
                 break;
@@ -238,14 +250,14 @@ class ClassicEqualizer extends HTMLElement {
 
     calculateBars() {
         this.barWidth = (this.offsetWidth - (this.barsMarginX*2)*this.cols) / this.cols;
-        this.barHeight = ((this.offsetWidth * (9/16)) - (this.barsMarginY*2)*this.rows) / this.rows;
+        this.barHeight = ((this.height || this.offsetWidth * (9/20)) - (this.barsMarginY*2)*this.rows) / this.rows;
     }
     
     draw() {
         this.canvas.style.display = 'block';
 
         this.canvas.width = this.offsetWidth;
-        this.canvas.height = this.offsetWidth * (9/16);
+        this.canvas.height = this.height || this.offsetWidth * (9/20);
 
         this.domEqualizer.style.display = 'none';
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -283,7 +295,7 @@ class ClassicEqualizer extends HTMLElement {
 
     htmlDraw() {
        this.domEqualizer.style.display = 'block';
-       this.domEqualizer.style.height = this.offsetHeight * (9/16);
+       this.domEqualizer.style.height = this.height || this.offsetHeight * (9/20);
        this.canvas.style.display = 'none';
 
        let children = this.cols * this.rows;
