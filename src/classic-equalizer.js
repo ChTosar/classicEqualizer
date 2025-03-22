@@ -185,7 +185,6 @@ class ClassicEqualizer extends HTMLElement {
                 break;
         }
 
-        this.animate();
     }
 
     connectedCallback() {
@@ -198,27 +197,29 @@ class ClassicEqualizer extends HTMLElement {
 
     animate() {
         const interval = 1000 / this.fps;
-        let lastTime = 0;
-
+        let lastTime = performance.now();
+    
         const loop = (currentTime) => {
-            if (!this.stop) {
-                const deltaTime = currentTime - lastTime;
-                if (deltaTime >= interval) {
-                    lastTime = currentTime;
-                    if (this.analyser) {
-                        this.analyser.getByteFrequencyData(this.dataArray);
-                    }
-
-                    if (this.type === 'canvas') {
-                        this.draw();
-                    } else if (this.type === 'html') {
-                        this.htmlDraw();
-                    }
+            if (this.stop) return;
+    
+            const deltaTime = currentTime - lastTime;
+    
+            if (deltaTime >= interval) {
+                lastTime += interval;
+    
+                if (this.analyser) {
+                    this.analyser.getByteFrequencyData(this.dataArray);
+                }
+    
+                if (this.type === 'canvas') {
+                    this.draw();
+                } else if (this.type === 'html') {
+                    this.htmlDraw();
                 }
             }
             requestAnimationFrame(loop);
         };
-
+    
         requestAnimationFrame(loop);
     }
 
