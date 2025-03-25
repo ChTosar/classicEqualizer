@@ -38,7 +38,6 @@ class ClassicEqualizer extends HTMLElement {
                     border: 0px solid #000;
                     display: block;
                     margin-bottom: ${this.barsMarginY}px;
-                    margin-left: ${this.barsMarginX}px;
                 }
                 #domEqualizer {
                     width: 100%;
@@ -268,7 +267,7 @@ class ClassicEqualizer extends HTMLElement {
     
         for (let row = 0; row < this.rows; row++) {
             for (let col = 0; col < this.cols; col++) {
-                let x = col * (barWidth + this.barsMarginX*2);
+                let x = (col * (barWidth + this.barsMarginX*2 + (this.barsMarginX/this.cols+1)) ) -1;
                 let y = this.canvas.height - (row * (barHeight + this.barsMarginY*2)) - barHeight;
     
                 let borderRadius = Math.min(this.barBorderRadius, barWidth / 2, barHeight / 2);
