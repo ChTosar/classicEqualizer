@@ -77,7 +77,7 @@ class ClassicEqualizer extends HTMLElement {
 
     getAudio() {
 
-        this.audio = this.shadowRoot.getElementById('audio') || document.querySelector(this.getAttribute('audio'));
+        this.audio = this.shadowRoot.getElementById('audio') || this.getAttribute('audio');
 
         this.audio.addEventListener('play', () => {
 
@@ -192,6 +192,11 @@ class ClassicEqualizer extends HTMLElement {
         window.addEventListener('resize', () => {
             this.calculateBars();
         });
+
+        const resizeObserver = new ResizeObserver(() => {
+            this.calculateBars();
+        });
+        resizeObserver.observe(this);
     }
 
     animate() {
