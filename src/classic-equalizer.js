@@ -34,15 +34,27 @@ class ClassicEqualizer extends HTMLElement {
             <div class="frequencys"></div>
             ${this.src ? `<audio id="audio" src="${this.src}" controls></audio>` : ''}
             <style>
-                canvas {
+                ${this.css()}
+            </style>`;
+
+        this.canvas = this.shadowRoot.getElementById('equalizer');
+        this.domEqualizer = this.shadowRoot.getElementById('domEqualizer');
+        this.ctx = this.canvas.getContext('2d');
+        this.oldPos = [];
+        this.dataArray = [];
+        this.stop = false;
+    }
+
+    css() {
+        return `canvas {
                     border: 0px solid #000;
                     display: block;
-                    margin-bottom: ${this.barsMarginY}px;
                 }
                 #domEqualizer {
                     width: 100%;
                     background-color: #000;
                     transform: scale(-1, 1);
+                    height: ${this.height}px;
                 }
                 #domEqualizer div {
                     display: inline-block;
@@ -50,6 +62,7 @@ class ClassicEqualizer extends HTMLElement {
                     margin-bottom: ${this.barsMarginY-4}px;
                     opacity: 1;
                     border-radius: ${this.barBorderRadius}px;
+                    
                     height: ${this.barHeight}px;
                     width: ${this.barWidth}px;
                 }
@@ -59,20 +72,7 @@ class ClassicEqualizer extends HTMLElement {
                 }
                 :host {
                     display: block;
-                }
-            </style>`;
-
-        for (let divs = this.rows*this.cols; divs > 0; divs--) {
-            const div = document.createElement('div');
-            this.shadowRoot.getElementById('domEqualizer').appendChild(div);
-        }
-        
-        this.canvas = this.shadowRoot.getElementById('equalizer');
-        this.domEqualizer = this.shadowRoot.getElementById('domEqualizer');
-        this.ctx = this.canvas.getContext('2d');
-        this.oldPos = [];
-        this.dataArray = [];
-        this.stop = false;
+                }`;
     }
 
     set audio(value) {
@@ -161,10 +161,12 @@ class ClassicEqualizer extends HTMLElement {
         switch (name) {
             case 'cols':
                 this.cols = this.getAttribute('cols');
+                this.initHtml();
                 this.calculateBars();
                 break;
             case 'rows': 
                 this.rows = this.getAttribute('rows');
+                this.initHtml();
                 this.calculateBars();
                 break;
             case 'height':
@@ -172,6 +174,7 @@ class ClassicEqualizer extends HTMLElement {
                 break;
             case 'type':
                 this.type = newValue;
+                this.initHtml();
                 break;
             case 'src':
                 this.src = newValue;
@@ -193,6 +196,16 @@ class ClassicEqualizer extends HTMLElement {
                 break;
         }
 
+        this.shadowRoot.querySelector('style').innerHTML = this.css();
+
+    }
+
+    initHtml() {
+        this.shadowRoot.getElementById('domEqualizer').innerHTML = '';
+        for (let divs = this.rows*this.cols; divs > 0; divs--) {
+            const div = document.createElement('div');
+            this.shadowRoot.getElementById('domEqualizer').appendChild(div);
+        }
     }
 
     connectedCallback() {
