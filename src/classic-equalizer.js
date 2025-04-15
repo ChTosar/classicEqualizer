@@ -75,11 +75,20 @@ class ClassicEqualizer extends HTMLElement {
         this.stop = false;
     }
 
+    set audio(value) {
+        this._audio = value;
+        this.getAudio();
+    }
+
+    get audio() {
+        return this._audio;
+    }
+
     getAudio() {
 
-        this.audio = this.shadowRoot.getElementById('audio') || this.getAttribute('audio');
+        this._audio = this._audio ? this._audio : this.shadowRoot.getElementById('audio') || document.querySelector(this.getAttribute('audio'));
 
-        this.audio.addEventListener('play', () => {
+        this._audio.addEventListener('play', () => {
 
             if (this.stop) {
                 this.stop = false;
@@ -88,7 +97,7 @@ class ClassicEqualizer extends HTMLElement {
 
             if (!this.analyser) {
                 this.analyser = new (window.AudioContext || window.webkitAudioContext)().createAnalyser();
-                this.source = this.analyser.context.createMediaElementSource(this.audio);
+                this.source = this.analyser.context.createMediaElementSource(this._audio);
                 this.source.connect(this.analyser);
                 this.analyser.connect(this.analyser.context.destination);
                 this.analyser.fftSize = 1024;
@@ -96,7 +105,7 @@ class ClassicEqualizer extends HTMLElement {
             }
         });
 
-        this.audio.addEventListener('pause', () => {
+        this._audio.addEventListener('pause', () => {
             this.stop = true;
         });
     }
